@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hermanos Alvarez · Madurado en Vidrio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap">
+<style>
+/* VOICE: sereno, de oficio y tierra; ficha-exhibición de la serie CAVA, con lenguaje propio de etiqueta mezcalera.
+   IDEA: la botella en vitrina que se va enterrando: la tierra sube en el escenario cuando se habla de los 14 meses bajo tierra.
+   PICTURE: la botella transparente sobre estratos de tierra y una roseta de cupreata dibujada en cobre.
+   COLOUR + TYPE: tierra tostada, papel cálido y cobre de alambique; DM Serif Display + Jost.
+   LAYOUT: contenido a la izquierda, escenario fijo a la derecha; marcos dobles de etiqueta, sellos y línea de tiempo; en móvil la botella queda de fondo. */
+@font-face{font-family:"DM Serif Display";src:url(assets/fonts/DMSerifDisplay-Regular.ttf) format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"DM Serif Display";src:url(assets/fonts/DMSerifDisplay-Italic.ttf) format("truetype");font-weight:400;font-style:italic;font-display:swap}
+:root{
+  --paper:#fbf8f3; --mist:#f4ede2; --line:#e3d8c8;
+  --ink:#3b2a1c; --ink-2:#5a4330; --ink-tint:#efe4d4;
+  --stone:#5b5249; --stone-2:#857a6f;
+  --cu:#b2733a; --cu-2:#d39a5f; --cu-tint:#f5e8d8; --agave:#6f8463;
+  --f-display:"DM Serif Display",Georgia,"Times New Roman",serif;
+  --f-body:"Jost","Futura","Century Gothic",system-ui,sans-serif;
+  --gut:clamp(20px,5vw,80px);
+  --night-2:#150e08; --beige:#efe4d2;
+  color-scheme:light;
+}
+.dark,.stage[data-s="proceso"],.stage[data-s="quiz"],.mbar[data-s="proceso"],.mbar[data-s="quiz"]{
+  --paper:#2f2117; --mist:#382819; --line:rgba(255,240,220,.16);
+  --ink:#fff8ef; --ink-2:#f1e8db; --ink-tint:#46331f;
+  --stone:#f3eadf; --stone-2:rgba(243,234,223,.72); --cu-tint:rgba(178,115,58,.22);
+}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--stone);font-family:var(--f-body);font-weight:300;font-size:16px;line-height:1.6;overflow-x:clip}
+img{max-width:100%}
+h1,h2,h3,h4{text-wrap:balance;margin:0;font-weight:400}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cu);outline-offset:3px}
+
+/* ---------- Aparición: se repite cada vez que el elemento entra en pantalla ---------- */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease var(--d,0s),transform .9s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+.rv.stag{opacity:1;transform:none}
+.rv.stag span{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.stag.in span{opacity:1;transform:none}
+.rv.stag span:nth-child(2){transition-delay:.12s}.rv.stag span:nth-child(3){transition-delay:.24s}.rv.stag span:nth-child(4){transition-delay:.36s}
+
+/* ---------- Estructura: contenido a la izquierda, escenario a la derecha ---------- */
+.page{display:grid;grid-template-columns:minmax(0,58fr) minmax(0,42fr)}
+.content{grid-column:1;grid-row:1;padding-left:max(0px,env(safe-area-inset-left,0px))}
+.stage{grid-column:2;grid-row:1;position:relative}
+.stage-in{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;place-items:center;border-left:1px solid var(--line);
+  background:radial-gradient(120% 80% at 50% 0%,#fffdf9 0%,#f6eee2 60%,var(--beige) 100%);transition:background-color .9s}
+.stage-in::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 0%,#3a2919 0%,#21160d 60%,var(--night-2) 100%);opacity:0;transition:opacity .9s ease}
+.stage[data-s="proceso"] .stage-in::before,.stage[data-s="quiz"] .stage-in::before{opacity:1}
+.stage-in{--bh:min(76svh,740px)}
+
+/* Escenario */
+.halo{position:absolute;inset:0;pointer-events:none;transition:opacity 1.2s ease;opacity:var(--ho,.9);background:radial-gradient(40% 44% at 50% 52%,var(--hc,var(--cu-tint)) 0%,transparent 72%)}
+.agave{position:absolute;left:50%;top:calc(50% + var(--bh)*.47);width:calc(var(--bh)*1.1);transform:translate(-50%,-100%) scale(var(--ms,1));transform-origin:50% 100%;
+  opacity:var(--mo,.5);transition:opacity 1s ease,transform 1.4s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.agave svg{display:block;width:100%;height:auto;overflow:visible}
+.agave path{fill:none;stroke:var(--cu);stroke-width:1.1;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.stage[data-s="proceso"] .agave path,.stage[data-s="quiz"] .agave path{stroke:var(--cu-2)}
+.bwrap{position:relative;height:var(--bh);aspect-ratio:252/666;max-width:100%;transform:rotate(var(--tilt,0deg)) translateY(var(--lift,0%));transition:transform 1.3s cubic-bezier(.2,.7,.2,1)}
+.bottle,.side{position:absolute;inset:0}
+.bottle{z-index:3}
+.float{position:relative;width:100%;height:100%;animation:float 7s ease-in-out infinite alternate}
+.float img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;filter:drop-shadow(0 26px 30px rgba(59,42,28,.25))}
+.gloss{position:absolute;inset:0;-webkit-mask:url(assets/img/bottle.webp) center/contain no-repeat;mask:url(assets/img/bottle.webp) center/contain no-repeat;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,248,235,.55) 47%,transparent 58%);background-size:300% 100%;animation:sweep 6.5s ease-in-out infinite;mix-blend-mode:screen}
+@keyframes float{0%{transform:translateY(-1.2%) rotate(-.8deg)}100%{transform:translateY(1.2%) rotate(.8deg)}}
+@keyframes sweep{0%{background-position:120% 0}55%,100%{background-position:-60% 0}}
+.side{z-index:2;opacity:0;transform:scale(.78);transform-origin:50% 100%;transition:opacity .9s ease,transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.side img{filter:saturate(.8) drop-shadow(0 20px 24px rgba(59,42,28,.18))}
+.side.r .float{animation-delay:-3s;animation-direction:alternate-reverse}
+[data-s="final"] .side{opacity:1}
+[data-s="final"] .side.l{transform:translateX(-88%) scale(.78)}
+[data-s="final"] .side.r{transform:translateX(88%) scale(.78)}
+/* Tierra: sube para "enterrar" la botella */
+.soil{position:absolute;left:-2%;right:-2%;bottom:0;height:var(--soil,11%);z-index:4;pointer-events:none;transition:height 1.6s cubic-bezier(.3,.7,.2,1)}
+.soil svg{position:absolute;left:0;top:-15px;width:100%;height:16px;display:block}
+.soil svg path{fill:#6b4a2f}
+.soil div{position:absolute;inset:0;background:
+  radial-gradient(circle at 20% 30%,rgba(255,235,210,.12) 0 2px,transparent 3px) 0 0/38px 34px,
+  radial-gradient(circle at 70% 60%,rgba(0,0,0,.18) 0 2px,transparent 3px) 0 0/52px 46px,
+  linear-gradient(180deg,#6b4a2f 0%,#5a3d26 22%,#7a5636 22.5%,#664629 48%,#4f3520 48.5%,#3f2a19 76%,#56391f 76.5%,#2f1f12 100%)}
+.soil b{position:absolute;left:50%;top:22px;transform:translateX(-50%);white-space:nowrap;font-weight:500;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,236,214,.75);opacity:0;transition:opacity .6s ease .9s}
+[data-s="proceso"] .soil{height:calc(12% + var(--dig,0) * 33%);transition:height .35s ease-out}
+.stage.buried[data-s="proceso"] .soil b{opacity:1;transition-delay:0s}
+
+/* Anotaciones */
+.co{position:absolute;top:var(--y);z-index:5;display:flex;align-items:center;opacity:0;pointer-events:none;transition:opacity .6s ease .35s,transform .7s cubic-bezier(.2,.7,.2,1) .35s}
+.co.rt{left:var(--x,90%);transform:translateX(-10px)}
+.co.lt{right:calc(100% - var(--x,10%));flex-direction:row-reverse;transform:translateX(10px)}
+.co i{flex:none;width:11px;height:11px;margin:-5.5px;border-radius:50%;background:var(--cu);box-shadow:0 0 0 5px rgba(178,115,58,.25);position:relative;z-index:1}
+.co::before{content:"";order:1;flex:none;width:clamp(24px,2.6vw,44px);height:1px;background:var(--cu)}
+.co span{order:2;width:138px;padding:8px 0 8px 12px;font-size:.74rem;line-height:1.45;color:var(--stone)}
+.co.lt span{padding:8px 12px 8px 0;text-align:right}
+.co b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.4rem;line-height:1.05;color:var(--ink)}
+[data-s="analisis"] .co[data-for="analisis"],[data-s="proceso"] .co[data-for="proceso"],[data-s="cata"] .co[data-for="cata"],[data-s="quiz"] .co[data-for="quiz"],[data-s="origen"] .co[data-for="origen"]{opacity:1;transform:none}
+
+/* Estados */
+[data-s="inicio"]{--mo:.55;--ms:1;--tilt:2deg;--hc:var(--cu-tint);--ho:.9;--soil:9%}
+[data-s="analisis"]{--mo:.25;--ms:1.04;--tilt:0deg;--hc:var(--ink-tint);--ho:1;--soil:9%}
+[data-s="proceso"]{--mo:.3;--ms:1.08;--tilt:0deg;--hc:rgba(178,115,58,.34);--ho:1;--soil:14%}
+[data-s="cata"]{--mo:.2;--ms:1.02;--tilt:3deg;--hc:#f3e2c4;--ho:1;--soil:9%}
+[data-s="quiz"]{--mo:.28;--ms:1.08;--tilt:2deg;--hc:rgba(178,115,58,.3);--ho:1;--soil:9%}
+[data-s="origen"]{--mo:.6;--ms:1.12;--tilt:0deg;--hc:#e4ead9;--ho:1;--soil:9%}
+[data-s="final"]{--mo:.4;--ms:1;--tilt:0deg;--hc:var(--cu-tint);--ho:1;--lift:1%;--soil:9%}
+
+/* Índice */
+.index{position:absolute;right:max(24px,env(safe-area-inset-right,0px));top:28px;z-index:6;display:grid;gap:4px;margin:0;padding:0;list-style:none;transition:opacity .6s}
+.index a{display:flex;flex-direction:row-reverse;align-items:center;gap:10px;padding:3px 0;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--stone-2);text-decoration:none;font-weight:500;transition:color .3s}
+.index a span{opacity:0;transform:translateX(6px);transition:opacity .3s,transform .3s}
+.index a::before{content:"";width:7px;height:7px;border:1px solid currentColor;border-radius:50%;transition:background .3s,border-color .3s,transform .3s}
+.index:hover a span,.index a.on span{opacity:1;transform:none}
+.index a:hover,.index a.on{color:var(--ink)}
+.index a.on::before{background:var(--cu);border-color:var(--cu);transform:scale(1.3)}
+[data-s="final"] .index{opacity:0;pointer-events:none}
+.mnav,.mbar{display:none}
+
+/* ---------- Contenido ---------- */
+.panel{padding-block:clamp(72px,12vh,130px);padding-left:var(--gut);padding-right:var(--gut);border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:minmax(0,800px);justify-content:end;gap:34px;align-content:start;
+  background:linear-gradient(190deg,#fffdf9 0%,#f9f3ea 50%,var(--beige) 100%)}
+.panel.dark{background:linear-gradient(190deg,#36261a 0%,#24180f 55%,var(--night-2) 100%);color:var(--stone)}
+.sh{display:flex;align-items:center;gap:14px}
+.stamp{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--cu);display:grid;place-items:center;position:relative;font-family:var(--f-display);font-size:1.1rem;color:var(--cu)}
+.stamp::after{content:"";position:absolute;inset:4px;border-radius:50%;border:1px dashed var(--cu);opacity:.55}
+.dark .stamp{color:var(--cu-2);border-color:var(--cu-2)}
+.kick{font-family:var(--f-display);font-style:italic;font-size:1.3rem;color:var(--cu)}
+.dark .kick{color:var(--cu-2)}
+.h2{font-family:var(--f-display);line-height:.95;font-size:clamp(3rem,6vw,5.8rem);color:var(--ink);letter-spacing:-.01em}
+.h2 em{color:var(--cu)}
+.dark .h2 em{color:var(--cu-2)}
+.lede{max-width:58ch;font-size:1.02rem;margin:0}
+.lede b{color:var(--ink);font-weight:500}
+
+/* Marco de etiqueta (doble filete) */
+.label{position:relative;border:1px solid var(--ink);padding:6px;background:var(--paper)}
+.label>.in-frame{border:1px solid var(--line);padding:clamp(18px,3vw,30px)}
+.dark .label{border-color:var(--cu-2)}
+
+/* Inicio */
+.intro{min-height:100vh;min-height:100svh;align-content:center;gap:28px}
+.logo{width:min(100%,430px)}
+.logo img{display:block;width:100%}
+.title{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 24px}
+.title .n{font-family:var(--f-display);font-size:clamp(7rem,13vw,11rem);line-height:.8;color:var(--cu);font-variant-numeric:lining-nums}
+.title .t{display:grid;gap:6px;border-left:1px solid var(--line);padding-left:24px}
+.title .t strong{font-family:var(--f-display);font-weight:400;font-size:clamp(2rem,3.6vw,3.2rem);line-height:1;color:var(--ink)}
+.title .t span{font-size:.95rem;color:var(--stone)}
+.strip{display:flex;flex-wrap:wrap;border:1px solid var(--ink);background:var(--paper)}
+.strip span{flex:1 1 auto;padding:10px 16px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink);text-align:center;white-space:nowrap}
+.strip span+span{border-left:1px solid var(--ink)}
+.strip span.hl{background:var(--ink);color:var(--paper)}
+.cue{display:flex;align-items:center;gap:12px;color:var(--stone-2);font-size:.85rem}
+.cue i{width:1px;height:44px;background:linear-gradient(var(--cu),transparent);animation:cue 2.2s ease-in-out infinite;transform-origin:top}
+@keyframes cue{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+
+/* Ficha técnica */
+.rows{display:grid;gap:2px}
+.rows div{display:flex;align-items:baseline;gap:10px;padding:8px 0}
+.rows small{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-2);font-weight:500;white-space:nowrap}
+.rows div::after{content:"";order:2;flex:1;border-bottom:1px dotted var(--stone-2);transform:translateY(-4px)}
+.rows strong{order:3;font-family:var(--f-display);font-weight:400;font-size:clamp(1.3rem,2.2vw,1.7rem);line-height:1.1;color:var(--ink);text-align:right}
+.agcard{position:relative;display:grid;grid-template-columns:minmax(0,1fr)}
+.agcard img{display:block;width:78%;aspect-ratio:16/10;object-fit:cover}
+.agcard .cap{position:relative;margin:-90px 0 0 auto;width:min(420px,72%);background:var(--paper);border:1px solid var(--line);padding:22px 24px;display:grid;gap:8px;box-shadow:0 20px 40px -24px rgba(59,42,28,.35)}
+.agcard small{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--agave);font-weight:600}
+.agcard h3{font-family:var(--f-display);font-size:2rem;line-height:1;color:var(--ink)}
+.agcard p{margin:0;font-size:.92rem}
+.gauge{display:grid;gap:14px;padding-top:26px;border-top:1px solid var(--line)}
+.ghead{display:flex;justify-content:space-between;align-items:end;gap:16px}
+.ghead span{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);font-weight:500}
+.ghead b{font-family:var(--f-display);font-weight:400;font-size:clamp(3rem,5vw,4rem);line-height:.85;color:var(--ink);white-space:nowrap}
+.ghead b small{font-family:var(--f-body);font-size:.8rem;color:var(--stone-2);margin-left:6px}
+.ruler{display:grid;grid-template-columns:repeat(21,minmax(0,1fr));align-items:end;height:46px;gap:0}
+.ruler i{justify-self:center;width:2px;height:calc(var(--h,40%));background:var(--line);transition:background .3s ease calc(var(--k)*45ms),height .5s cubic-bezier(.2,.7,.2,1) calc(var(--k)*45ms)}
+.ruler i:nth-child(5n+1){--h:100%}
+.in .ruler i.on{background:var(--cu)}
+.in .ruler i.me{background:var(--ink);height:100%;width:3px}
+.months{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:4px}
+.months i{height:34px;border:1px solid var(--line);background:var(--paper);transition:background .35s ease calc(var(--k)*70ms),border-color .35s ease calc(var(--k)*70ms);position:relative}
+.months i:nth-child(12)::after{content:"";position:absolute;right:-3px;top:-8px;bottom:-8px;border-right:1px dashed var(--ink)}
+.in .months i.on{background:linear-gradient(180deg,#7a5636,#4f3520);border-color:#4f3520}
+.gscale{display:flex;justify-content:space-between;gap:8px;font-size:.72rem;color:var(--stone-2)}
+.more summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;min-height:44px;font-family:var(--f-display);font-style:italic;font-size:1.15rem;color:var(--cu);border-bottom:1px solid transparent}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:"+";font-family:var(--f-body);font-style:normal;font-size:1rem;width:24px;height:24px;border:1px solid var(--cu);border-radius:50%;display:grid;place-items:center;transition:transform .3s}
+.more[open] summary::after{transform:rotate(45deg)}
+.more .body{display:grid;gap:16px;padding:10px 0 4px;animation:rise .45s ease both}
+.qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.qa div{border-top:2px solid var(--cu);padding-top:12px}
+.qa small{display:block;font-family:var(--f-display);font-size:1.2rem;color:var(--ink);margin-bottom:4px}
+.qa p{margin:0;font-size:.9rem}
+.qa p b{color:var(--ink);font-weight:500}
+.viz{display:grid;gap:12px;padding:18px;background:var(--mist);border:1px solid var(--line)}
+.viz .cap{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-2);font-weight:500}
+.viz .note{margin:0;font-size:.85rem}
+.viz .note b{color:var(--ink);font-weight:500}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.flow span{border:1px solid var(--cu);background:var(--paper);padding:7px 12px;font-size:.82rem;color:var(--ink);font-weight:500;border-radius:999px}
+.flow i{font-style:normal;color:var(--cu)}
+.rest{display:grid;gap:10px}
+.rest .row{display:grid;grid-template-columns:10em minmax(0,1fr);gap:12px;align-items:center;font-size:.82rem}
+.rest .row b{font-weight:500;color:var(--ink)}
+.rest .bar{height:28px;background:var(--paper);border:1px solid var(--line);position:relative}
+.rest .bar i{position:absolute;inset:0 auto 0 0;width:var(--w);display:flex;align-items:center;padding:0 10px;font-style:normal;font-size:.74rem;white-space:nowrap;color:#fff;font-weight:500}
+.rest .glass i{background:linear-gradient(180deg,#7a5636,#4f3520)}
+.rest .oak i{background:#b48a3c}
+.rest .zero i{color:var(--stone-2)}
+
+/* Proceso: línea de tiempo que se llena al bajar */
+.motto{font-family:var(--f-display);font-style:italic;font-size:clamp(1.5rem,2.6vw,2.1rem);line-height:1.15;color:var(--cu-2);margin:0}
+.tl{list-style:none;margin:0;padding:0 0 0 46px;position:relative;display:grid;gap:clamp(34px,6vh,56px)}
+.tl::before,.tl::after{content:"";position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tl::after{background:linear-gradient(var(--cu-2),var(--cu));bottom:auto;height:calc(var(--prog,0)*(100% - 16px))}
+.tl li{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:22px;align-items:center}
+.tl li::before{content:"";position:absolute;left:-38px;top:12px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--cu-2);z-index:1;transition:background .4s}
+.tl li.in::before{background:var(--cu-2)}
+.tl .n{font-family:var(--f-display);font-size:1rem;color:var(--cu-2);display:block}
+.tl h4{font-family:var(--f-display);font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1.05;color:var(--ink);margin:2px 0 8px}
+.tl p{margin:0;font-size:.95rem}
+.tl p b{color:var(--ink);font-weight:500}
+.tl figure{margin:0;aspect-ratio:4/3;overflow:hidden;position:relative}
+.tl figure img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.85);transform:scale(1.12);transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+.tl li.in figure img{transform:scale(1)}
+.tl li:nth-child(even) .txt{order:2}
+.tl .buried{background:linear-gradient(180deg,#3a2919,#24180f);border:1px solid var(--line)}
+.tl .buried svg{width:100%;height:100%;display:block}
+.tl li.key h4{color:var(--cu-2)}
+
+/* Nota de cata */
+.picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pk{background:var(--paper);border:1px solid var(--line);padding:18px 14px 16px;cursor:pointer;display:grid;justify-items:center;gap:8px;transition:border-color .3s,background .3s,transform .3s;min-height:44px}
+.pk svg{width:40px;height:40px;stroke:var(--stone-2);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.pk span{font-family:var(--f-display);font-size:1.5rem;color:var(--stone-2);line-height:1;transition:color .3s}
+.pk:hover{transform:translateY(-2px)}
+.pk[aria-selected="true"]{border-color:var(--ink);background:var(--cu-tint);box-shadow:inset 0 0 0 4px var(--paper),inset 0 0 0 5px var(--cu)}
+.pk[aria-selected="true"] svg{stroke:var(--cu)}
+.pk[aria-selected="true"] span{color:var(--ink)}
+.note{display:grid;gap:18px}
+.note p{margin:0;font-size:1.1rem;max-width:56ch}
+.note p b{color:var(--ink);font-weight:500}
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tags span{font-family:var(--f-display);font-size:1.5rem;color:var(--ink);padding:4px 18px;border:1px solid var(--cu);border-radius:999px;background:var(--paper);animation:pop .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--k)*110ms)}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:none}}
+
+/* Quiz: carta de lotería */
+.quiz{border:1px solid var(--cu-2);padding:7px;background:var(--paper)}
+.quiz-in{border:1px solid var(--line);padding:clamp(20px,4vw,40px);display:grid;gap:24px;position:relative;overflow:hidden}
+.quiz-in::before{content:attr(data-n);position:absolute;right:18px;top:6px;font-family:var(--f-display);font-size:7rem;line-height:1;color:var(--ink-tint);pointer-events:none}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;position:relative}
+.qcount{font-family:var(--f-display);font-style:italic;font-size:1.15rem;color:var(--cu-2)}
+.qscore{font-size:.82rem;color:var(--stone-2)}
+.qscore b{color:var(--ink);font-weight:600}
+.segs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;position:relative}
+.segs i{height:3px;background:var(--line);transition:background .4s}
+.segs i.cur{background:var(--ink)}.segs i.ok{background:var(--cu-2)}.segs i.bad{background:var(--stone-2)}
+.qtitle{font-family:var(--f-display);font-size:clamp(1.9rem,3.4vw,2.9rem);line-height:1.02;color:var(--ink);position:relative;max-width:20ch}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;position:relative}
+.opt{text-align:left;background:var(--paper);border:1px solid var(--line);padding:14px 16px;cursor:pointer;display:flex;gap:14px;align-items:center;transition:border-color .25s,transform .25s,background .25s;min-height:64px;animation:pop .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--k)*80ms)}
+.opt:hover:not(:disabled){border-color:var(--cu-2);transform:translateY(-2px)}
+.opt .k{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--f-display);font-size:1rem;color:var(--stone-2)}
+.opt .t{font-size:.95rem;line-height:1.35}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--cu-2);background:var(--cu-tint)}.opt.right .k{border-color:var(--cu-2);background:var(--cu-2);color:#2f2117}
+.opt.right .t{color:var(--ink);font-weight:500}
+.opt.wrong{border-color:var(--stone-2);animation:shake .4s}.opt.wrong .k{background:var(--stone-2);color:var(--paper)}
+.opt.wrong .t{text-decoration:line-through}
+.opt.dim{opacity:.45}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.fb{border-left:3px solid var(--cu-2);padding:4px 0 4px 18px;display:grid;gap:6px;position:relative;animation:rise .45s ease both}
+.fb.no{border-color:var(--stone-2)}
+.fb h4{font-family:var(--f-display);font-size:1.7rem;color:var(--ink)}
+.fb p{margin:0;max-width:60ch}
+.fb p b{color:var(--ink);font-weight:500}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.btn{justify-self:start;background:var(--cu);color:#fff;border:0;border-radius:999px;padding:14px 26px;min-height:44px;cursor:pointer;font-weight:500;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;transition:background .25s;position:relative;text-decoration:none;display:inline-block}
+.btn:hover{background:#9a6230}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--cu-2)}
+.final{display:grid;gap:16px;position:relative;animation:rise .5s ease both}
+.final .big{font-family:var(--f-display);font-size:clamp(6rem,12vw,9rem);line-height:.8;color:var(--cu-2)}
+.final .big small{font-size:.35em;color:var(--stone-2)}
+.final h3{font-family:var(--f-display);font-size:clamp(2.1rem,4vw,3rem);line-height:1;color:var(--ink)}
+.final .row{display:flex;gap:12px;flex-wrap:wrap}
+
+/* Origen */
+.maestro{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(22px,4vw,44px);align-items:center}
+.arch{position:relative;padding:8px;border:1px solid var(--cu);border-radius:999px 999px 0 0}
+.arch img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 30%;border-radius:999px 999px 0 0}
+.mtext{display:grid;gap:12px}
+.mtext small{font-family:var(--f-display);font-style:italic;font-size:1.2rem;color:var(--cu)}
+.mtext h3{font-family:var(--f-display);font-size:clamp(2.2rem,3.8vw,3.1rem);line-height:.98;color:var(--ink)}
+.mtext p{margin:0}
+.since{display:flex;align-items:center;gap:16px;padding-top:14px;border-top:1px solid var(--line)}
+.since b{font-family:var(--f-display);font-weight:400;font-size:clamp(3.4rem,6vw,4.6rem);line-height:.85;color:transparent;-webkit-text-stroke:1px var(--cu);font-variant-numeric:lining-nums}
+.since span{font-size:.9rem;max-width:24ch}
+.seals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,2vw,24px)}
+.seal{display:grid;justify-items:center;gap:12px;text-align:center}
+.seal .disc{position:relative;width:min(100%,150px);aspect-ratio:1;transform:rotate(-60deg) scale(.7);opacity:0;transition:transform 1.1s cubic-bezier(.2,.8,.2,1.1) var(--d,0s),opacity .6s ease var(--d,0s)}
+.seal.in .disc{transform:none;opacity:1}
+.seal svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.seal .ring{animation:spin 40s linear infinite;transform-origin:50% 50%}
+.seal .ring text{font-family:var(--f-body);font-size:8.6px;letter-spacing:.22em;text-transform:uppercase;fill:var(--ink);font-weight:500}
+.seal .face{position:absolute;inset:22%;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;align-content:center;text-align:center;
+  box-shadow:inset 0 0 0 3px var(--ink),inset 0 0 0 4px var(--cu-2)}
+.seal .face b{font-family:var(--f-display);font-weight:400;font-size:clamp(1.15rem,2vw,1.6rem);line-height:1}
+.seal .face em{font-style:normal;font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin-top:3px}
+.seal .face svg{position:static;width:46%;height:auto;stroke:var(--cu-2);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.seal p{margin:0;font-size:.84rem;line-height:1.4;max-width:20ch}
+.seal p b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.15rem;color:var(--ink)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Cierre */
+.closing{position:relative;min-height:80vh;min-height:80svh;align-content:end;background:#1a120b;color:#f6eee4;overflow:hidden;gap:24px}
+.closing .bg{position:absolute;inset:0;background:url(assets/img/hero.jpg) center/cover;opacity:.55;transform:scale(1.08);transition:transform 6s ease}
+.closing.seen .bg{transform:scale(1)}
+.closing::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,18,11,.1) 0%,rgba(26,18,11,.55) 55%,rgba(21,14,8,.95) 100%)}
+.closing>*:not(.bg){position:relative;z-index:1}
+.closing .lw{width:min(100%,300px)}
+.closing .motto{color:#f1d3ad}
+.closing .strip{border-color:rgba(255,240,220,.4);background:transparent}
+.closing .strip span{color:#fff8ef}
+.closing .strip span+span{border-color:rgba(255,240,220,.4)}
+.pilot{font-size:.76rem;color:rgba(246,238,228,.65);margin:0}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1240px){
+  .co.rt,.co.lt{left:50%;right:auto;top:auto;bottom:-14px;transform:translate(-50%,8px);flex-direction:column}
+  .co::before,.co i{display:none}
+  .co span,.co.lt span{width:240px;text-align:center;background:var(--paper);padding:8px 12px;border:1px solid var(--line)}
+  [data-s] .co[data-for]{transform:translate(-50%,8px)}
+  [data-s="analisis"] .co[data-for="analisis"],[data-s="proceso"] .co[data-for="proceso"],[data-s="cata"] .co[data-for="cata"],[data-s="quiz"] .co[data-for="quiz"],[data-s="origen"] .co[data-for="origen"]{transform:translate(-50%,0)}
+  .stage-in{--bh:min(68svh,660px)}
+  .seals{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:900px){
+  .page{display:block}
+  .stage{position:fixed;inset:0;z-index:0}
+  .stage-in{position:absolute;inset:0;height:auto;border:0;place-items:start center;padding-top:calc(5svh + env(safe-area-inset-top,0px))}
+  .stage-in{--bh:60svh}
+  .agave{top:calc(5svh + 60svh*.97)}
+  .soil{display:none}
+  .co,.index{display:none}
+  .mnav{display:block;position:absolute;z-index:2;top:calc(5svh + 60svh + env(safe-area-inset-top,0px));transform:translateY(-100%);left:max(14px,env(safe-area-inset-left,0px))}
+  .mnav ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+  .mnav a{display:flex;align-items:center;gap:8px;padding:6px 0;white-space:nowrap;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stone-2);text-decoration:none;font-weight:500}
+  .mnav a::before{content:"";width:6px;height:6px;border:1px solid var(--cu);border-radius:50%}
+  .mbar{display:block;position:fixed;top:0;left:0;right:0;z-index:30;padding-top:env(safe-area-inset-top,0px);padding-inline:max(10px,env(safe-area-inset-left,0px));
+    background:rgba(251,248,243,.95);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);transform:translateY(-105%);transition:transform .45s cubic-bezier(.2,.7,.2,1),background-color .6s}
+  .mbar.show{transform:none}
+  .mbar[data-s="proceso"],.mbar[data-s="quiz"]{background:rgba(44,31,20,.96)}
+  .mbar ul{list-style:none;margin:0;padding:0;display:flex;overflow-x:auto;scrollbar-width:none}
+  .mbar li{flex:none}
+  .mbar a{display:block;white-space:nowrap;padding:15px 10px 13px;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--stone-2);text-decoration:none;border-bottom:2px solid transparent}
+  .mbar a.on{color:var(--ink);border-color:var(--cu)}
+  .content{position:relative;z-index:1}
+  .panel{justify-content:stretch;background:linear-gradient(190deg,rgba(255,253,249,.9) 0%,rgba(249,243,234,.9) 50%,rgba(239,228,210,.94) 100%);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+    padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+  .panel.dark{background:linear-gradient(190deg,rgba(54,38,26,.94) 0%,rgba(36,24,15,.95) 55%,rgba(21,14,8,.97) 100%)}
+  .intro{min-height:auto;padding-top:68svh;background:linear-gradient(rgba(255,253,249,0) 0,rgba(255,253,249,0) 63svh,var(--paper) 72svh);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .closing{background:#1a120b;-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+@media (max-width:600px){
+  .opts,.qa,.maestro{grid-template-columns:minmax(0,1fr)}
+  .arch{max-width:300px}
+  .agcard img{width:100%}
+  .agcard .cap{width:92%;margin-top:-50px}
+  .tl{padding-left:34px}
+  .tl::before,.tl::after{left:8px}
+  .tl li{grid-template-columns:minmax(0,1fr)}
+  .tl li::before{left:-32px}
+  .tl li:nth-child(even) .txt{order:0}
+  .pk{padding:14px 6px}.pk span{font-size:1.25rem}
+  .months{gap:2px}.months i{height:26px}
+  .rest .row{grid-template-columns:minmax(0,1fr)}
+  .title{grid-template-columns:minmax(0,1fr)}
+  .title .t{border-left:0;padding-left:0}
+  .strip span{flex-basis:50%}
+  .strip span:nth-child(3){border-left:0}
+  .strip span:nth-child(n+3){border-top:1px solid var(--ink)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .float,.gloss,.cue i,.seal .ring{animation:none}
+  .rv,.rv.stag span{opacity:1;transform:none;transition:none}
+  .seal .disc{transform:none;opacity:1;transition:none}
+  .bwrap,.agave,.side,.co,.soil,.mbar,.tl figure img{transition:none}
+}
+</style>
+</head>
+<body>
+<nav aria-label="Secciones" class="mbar" data-s="inicio" id="mbar"><ul>
+<li><a data-k="inicio" href="#inicio">Inicio</a></li>
+<li><a data-k="analisis" href="#analisis">Ficha técnica</a></li>
+<li><a data-k="proceso" href="#proceso">Proceso</a></li>
+<li><a data-k="cata" href="#cata">Nota de cata</a></li>
+<li><a data-k="quiz" href="#quiz">Quiz</a></li>
+<li><a data-k="origen" href="#origen">Origen</a></li>
+</ul></nav>
+
+<div class="page">
+<main class="content">
+<!-- INICIO -->
+<header class="panel intro" data-k="inicio" id="inicio">
+<div class="sh rv"><span class="stamp" aria-hidden="true">HA</span><span class="kick">Mezcal artesanal de Michoacán</span></div>
+<h1 class="logo rv" style="--d:.1s"><img alt="Hermanos Alvarez, Mezcal Artesanal" src="assets/img/logo-dark.png"></h1>
+<div class="title rv" style="--d:.2s">
+<span class="n">14</span>
+<div class="t"><strong>Madurado en vidrio</strong><span>Meses bajo tierra, en barril de vidrio, antes de llegar a la botella.</span></div>
+</div>
+<p class="lede rv" style="--d:.3s">Un mezcal de <b>agave cupreata</b> que, después de destilado, se guarda <b>14 meses enterrado en barril de vidrio</b>. Lo elabora la familia Álvarez en Túmbisca, Michoacán, con un oficio que se hereda <b>desde 1818</b>: horno de piedra, tahona y alambique.</p>
+<div class="strip rv stag" style="--d:.4s"><span class="hl">Michoacán</span><span>100% agave cupreata</span><span>48% Alc. Vol.</span><span>750 ml</span></div>
+<nav aria-label="Secciones de la ficha" class="mnav"><ul>
+<li><a href="#analisis">Ficha técnica</a></li>
+<li><a href="#proceso">Proceso</a></li>
+<li><a href="#cata">Nota de cata</a></li>
+<li><a href="#quiz">Quiz</a></li>
+<li><a href="#origen">Origen</a></li>
+</ul></nav>
+<div class="cue rv" style="--d:.5s"><i></i><span>Desliza para descubrirlo</span></div>
+</header>
+
+<!-- FICHA TÉCNICA -->
+<section class="panel" data-k="analisis" id="analisis">
+<div class="sh rv"><span class="stamp" aria-hidden="true">I</span><span class="kick">Ficha técnica</span></div>
+<h2 class="h2 rv" style="--d:.1s">La botella<br><em>en cifras</em></h2>
+<div class="label rv" style="--d:.15s"><div class="in-frame rows">
+<div><small>Agave</small><strong>Cupreata</strong></div>
+<div><small>Origen</small><strong>Túmbisca, Michoacán</strong></div>
+<div><small>Categoría</small><strong>Madurado en vidrio</strong></div>
+<div><small>Maestro mezcalero</small><strong>Humberto Álvarez Rojas</strong></div>
+<div><small>Contenido</small><strong>750 ml</strong></div>
+</div></div>
+<div class="agcard rv">
+<img alt="Agave cupreata creciendo entre rocas" src="assets/img/agave.jpg" loading="lazy">
+<div class="cap">
+<small>El agave</small>
+<h3>Agave <em>cupreata</em></h3>
+<p>Es el agave de la casa: la mayor parte de lo que destila Hermanos Alvarez nace de él. Crece en las laderas de la sierra michoacana, se cosecha maduro y a mano, y es el que da a este mezcal su denominación de origen Michoacán.</p>
+</div>
+</div>
+
+<div class="gauge rv">
+<div class="ghead"><span>Graduación alcohólica</span><b>48<small>% vol</small></b></div>
+<div class="ruler" id="ruler" aria-hidden="true"></div>
+<div class="gscale"><span>35%</span><span>Rango del mezcal</span><span>55%</span></div>
+<details class="more"><summary>¿Qué significa?</summary>
+<div class="body">
+<div class="qa">
+<div><small>Qué es</small><p>La parte del mezcal que es alcohol. Con 48%, una botella de 750 ml tiene unos <b>360 ml de alcohol</b>.</p></div>
+<div><small>Cómo se forma</small><p>Las levaduras naturales convierten los azúcares del agave cocido en alcohol; el <b>alambique</b> lo separa y lo concentra.</p></div>
+<div><small>Qué aporta</small><p>Cuerpo, calidez y vehículo para los aromas. Se disfruta <b>a sorbos pequeños</b>, dejando que se abra en la boca.</p></div>
+</div>
+<div class="viz">
+<span class="cap">Así nace el alcohol del mezcal</span>
+<div class="flow"><span>Agave cocido</span><i>→</i><span>Fermentación</span><i>→</i><span>Destilado</span><i>→</i><span>48% vol</span></div>
+</div>
+</div>
+</details>
+</div>
+
+<div class="gauge rv">
+<div class="ghead"><span>Maduración en vidrio</span><b>14<small>meses</small></b></div>
+<div class="months" id="months" aria-label="14 de 24 meses; la categoría exige más de 12" role="img"></div>
+<div class="gscale"><span>Destilado</span><span>12 meses · mínimo de la categoría</span><span>24 meses</span></div>
+<details class="more"><summary>¿Qué significa?</summary>
+<div class="body">
+<div class="qa">
+<div><small>Qué es</small><p>Un reposo después de destilar. El mezcal se guarda en <b>barril de vidrio enterrado</b> durante 14 meses antes de embotellarse.</p></div>
+<div><small>Cómo funciona</small><p>Bajo tierra hay oscuridad y una temperatura estable. El vidrio es inerte: <b>no le cede color ni sabor</b>, solo le da tiempo.</p></div>
+<div><small>Qué aporta</small><p>El mezcal se asienta y se integra: queda <b>redondo, cálido y persistente</b>, sin perder el carácter del agave ni su transparencia.</p></div>
+</div>
+<div class="viz">
+<span class="cap">Mismo agave, distinto reposo · línea Hermanos Alvarez</span>
+<div class="rest">
+<div class="row"><b>Joven</b><div class="bar zero"><i style="--w:100%">Sin reposo · directo a la botella</i></div></div>
+<div class="row"><b>Reposado</b><div class="bar oak"><i style="--w:41.7%">10 meses · roble</i></div></div>
+<div class="row"><b>Madurado en vidrio</b><div class="bar glass"><i style="--w:58.3%">14 meses · vidrio</i></div></div>
+</div>
+<p class="note">La barrica de roble tiñe el reposado de <b>amarillo</b> y le da vainilla y madera. El vidrio deja el mezcal <b>transparente</b>.</p>
+</div>
+</div>
+</details>
+</div>
+</section>
+
+<!-- PROCESO -->
+<section class="panel dark" data-k="proceso" id="proceso">
+<div class="sh rv"><span class="stamp" aria-hidden="true">II</span><span class="kick">Del agave a la botella</span></div>
+<h2 class="h2 rv" style="--d:.1s">Cómo se<br><em>hace</em></h2>
+<p class="motto rv" style="--d:.2s">El cobre canta, la leña transforma y la magia comienza.</p>
+<ol class="tl" id="tl"></ol>
+</section>
+
+<!-- NOTA DE CATA -->
+<section class="panel" data-k="cata" id="cata">
+<div class="sh rv"><span class="stamp" aria-hidden="true">III</span><span class="kick">En la copa</span></div>
+<h2 class="h2 rv" style="--d:.1s">Nota<br><em>de cata</em></h2>
+<div class="picker rv" style="--d:.15s" role="tablist" aria-label="Nota de cata">
+<button aria-selected="true" class="pk" data-k="vista" role="tab" type="button"><svg viewBox="0 0 54 48" aria-hidden="true"><path d="M18 6h18l-2 14a7 7 0 0 1-14 0zM27 27v15M20 42h14M20 16h14"/></svg><span>Vista</span></button>
+<button aria-selected="false" class="pk" data-k="olfato" role="tab" type="button"><svg viewBox="0 0 54 48" aria-hidden="true"><path d="M16 6c-4 10-4 18 2 24 4 4 10 4 14 0M30 14c3 2 5 5 5 9M36 10c4 3 7 8 7 14M14 40c6 2 12 2 18-2"/></svg><span>Olfato</span></button>
+<button aria-selected="false" class="pk" data-k="sabor" role="tab" type="button"><svg viewBox="0 0 54 48" aria-hidden="true"><path d="M10 20c4-4 10-6 17-6s13 2 17 6c-4 10-10 16-17 16S14 30 10 20zM10 20c6 3 11 4 17 4s11-1 17-4"/></svg><span>Sabor</span></button>
+</div>
+<div class="note rv" style="--d:.2s" id="note" role="tabpanel"></div>
+</section>
+
+<!-- QUIZ -->
+<section class="panel dark" data-k="quiz" id="quiz">
+<div class="sh rv"><span class="stamp" aria-hidden="true">IV</span><span class="kick">Pon a prueba tu paladar</span></div>
+<h2 class="h2 rv" style="--d:.1s">¿Cuánto sabes<br><em>de este mezcal?</em></h2>
+<div class="quiz rv" style="--d:.15s"><div aria-live="polite" class="quiz-in" id="quizbox"></div></div>
+</section>
+
+<!-- ORIGEN -->
+<section class="panel" data-k="origen" id="origen">
+<div class="sh rv"><span class="stamp" aria-hidden="true">V</span><span class="kick">De dónde viene</span></div>
+<h2 class="h2 rv" style="--d:.1s">Hecho en<br><em>Túmbisca</em></h2>
+<div class="maestro">
+<div class="arch rv"><img alt="Humberto Álvarez Rojas jimando agave con coa" src="assets/img/maestro.jpg" loading="lazy"></div>
+<div class="mtext rv" style="--d:.15s">
+<small>Maestro mezcalero</small>
+<h3>Humberto Álvarez Rojas</h3>
+<p>Elabora el mezcal en Túmbisca, municipio de Morelia, Michoacán, con los procesos tradicionales que su familia ha mantenido por generaciones.</p>
+<div class="since"><b>1818</b><span>Desde entonces se transmite el oficio en la familia Álvarez.</span></div>
+</div>
+</div>
+<div class="seals" id="seals"></div>
+</section>
+
+<!-- CIERRE -->
+<footer class="panel closing" data-k="final" id="final">
+<div class="bg" aria-hidden="true"></div>
+<img class="lw rv" alt="Hermanos Alvarez, Mezcal Artesanal" src="assets/img/logo-white.png">
+<p class="motto rv" style="--d:.15s">Unidos, desde el legado.</p>
+<div class="strip rv stag" style="--d:.3s"><span>750 ml</span><span>48% vol</span><span>100% cupreata</span><span>14 meses en vidrio</span></div>
+<p class="pilot rv" style="--d:.4s">Piloto armado con el portafolio comercial 2026. Datos logísticos y maridaje por confirmar.</p>
+</footer>
+</main>
+
+<aside class="stage" data-s="inicio" id="stage">
+<div class="stage-in">
+<div aria-hidden="true" class="halo"></div>
+<div aria-hidden="true" class="agave"><svg id="agavesvg" viewBox="-300 -330 600 340"></svg></div>
+<div class="bwrap">
+<div class="side l" aria-hidden="true"><div class="float"><img alt="" src="assets/img/bottle-34.webp"></div></div>
+<div class="side r" aria-hidden="true"><div class="float"><img alt="" src="assets/img/bottle-back.webp"></div></div>
+<div aria-label="Botella de Mezcal Hermanos Alvarez Madurado en Vidrio, agave cupreata, tapón de madera y etiqueta gris" class="bottle" role="img">
+<div class="float"><img alt="" src="assets/img/bottle.webp"><div aria-hidden="true" class="gloss"></div></div>
+</div>
+<div aria-hidden="true" class="co rt" data-for="analisis" style="--y:44%;--x:90%"><i></i><span><b>48% Alc. Vol.</b>100% agave cupreata · 750 ml</span></div>
+<div aria-hidden="true" class="co lt" data-for="proceso" style="--y:24%;--x:10%"><i></i><span><b>Piedra, leña y cobre</b>Horno de piedra · tahona · alambique</span></div>
+<div aria-hidden="true" class="co rt" data-for="cata" style="--y:30%;--x:90%"><i></i><span><b>Transparente</b>Brillante, limpio y de cuerpo sedoso</span></div>
+<div aria-hidden="true" class="co rt" data-for="quiz" style="--y:62%;--x:90%"><i></i><span><b>Desde 1818</b>Un oficio que se hereda en la familia Álvarez</span></div>
+<div aria-hidden="true" class="co lt" data-for="origen" style="--y:40%;--x:10%"><i></i><span><b>Túmbisca, Michoacán</b>Denominación de origen</span></div>
+</div>
+<div class="soil" aria-hidden="true"><svg viewBox="0 0 400 16" preserveAspectRatio="none"><path d="M0 16V9c30-6 52 4 84-2s58-7 92-1 60 5 94-2 56-6 86 0 32 3 44 1V16z"/></svg><div></div><b>14 meses bajo tierra</b></div>
+<nav aria-label="Secciones"><ul class="index" id="index">
+<li><a data-k="inicio" href="#inicio"><span>Inicio</span></a></li>
+<li><a data-k="analisis" href="#analisis"><span>Ficha técnica</span></a></li>
+<li><a data-k="proceso" href="#proceso"><span>Proceso</span></a></li>
+<li><a data-k="cata" href="#cata"><span>Nota de cata</span></a></li>
+<li><a data-k="quiz" href="#quiz"><span>Quiz</span></a></li>
+<li><a data-k="origen" href="#origen"><span>Origen</span></a></li>
+</ul></nav>
+</div>
+</aside>
+</div>
+
+<script>
+{
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Roseta de agave ---------- */
+let d='';const N=17;
+for(let i=0;i<N;i++){
+  const a=(-168+i*(156/(N-1)))*Math.PI/180,len=(i%2?250:300)*(0.75+0.25*Math.sin(i*1.7)**2);
+  const tx=Math.cos(a)*len,ty=Math.sin(a)*len*1.02,w=18+(i%3)*5,nx=-Math.sin(a),ny=Math.cos(a),mx=Math.cos(a)*len*.45,my=Math.sin(a)*len*.45,f=v=>v.toFixed(1);
+  d+=`<path d="M${f(nx*w*.5)} ${f(ny*w*.5)} Q${f(mx+nx*w)} ${f(my+ny*w)} ${f(tx)} ${f(ty)} Q${f(mx-nx*w)} ${f(my-ny*w)} ${f(-nx*w*.5)} ${f(-ny*w*.5)}"/><path d="M0 0 L${f(tx*.88)} ${f(ty*.88)}" style="opacity:.45"/>`;
+}
+document.getElementById('agavesvg').innerHTML=d;
+
+/* ---------- Medidores ---------- */
+document.getElementById('ruler').innerHTML=Array.from({length:21},(_,i)=>`<i class="${35+i<=48?'on':''}${35+i===48?' me':''}" style="--k:${i}"></i>`).join('');
+document.getElementById('months').innerHTML=Array.from({length:24},(_,i)=>`<i class="${i<14?'on':''}" style="--k:${i}"></i>`).join('');
+
+/* ---------- Proceso ---------- */
+const BURIED=`<svg viewBox="0 0 300 225" aria-hidden="true"><defs><linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#cfe0dc" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#cfe0dc" stop-opacity=".3"/></linearGradient></defs>
+<rect y="62" width="300" height="163" fill="#5a3d26"/><rect y="110" width="300" height="40" fill="#4f3520"/><rect y="150" width="300" height="75" fill="#3f2a19"/>
+<path d="M0 64c40-8 70 6 110-2s80-6 110 0 50 4 80-2V0H0z" fill="#24180f"/>
+<g fill="#7a5636" opacity=".7"><circle cx="40" cy="96" r="3"/><circle cx="250" cy="130" r="4"/><circle cx="70" cy="180" r="3"/><circle cx="230" cy="190" r="2.5"/><circle cx="120" cy="205" r="3"/></g>
+<path d="M134 86h32v10c0 4 26 10 26 34v52c0 10-8 14-16 14h-52c-8 0-16-4-16-14v-52c0-24 26-30 26-34z" fill="url(#gl)" stroke="#e8f1ee" stroke-opacity=".7"/>
+<path d="M112 140h76v42c0 10-8 14-16 14h-44c-8 0-16-4-16-14z" fill="#f4f8f6" opacity=".35"/>
+<rect x="132" y="78" width="36" height="10" rx="2" fill="#c9a77a"/>
+<text x="150" y="40" text-anchor="middle" font-family="Jost,sans-serif" font-size="11" letter-spacing="2.4" fill="#d39a5f">14 MESES BAJO TIERRA</text></svg>`;
+const STEPS=[
+ ['Jima','Se cosechan a mano los agaves maduros y se les retiran las pencas con la coa hasta dejar la <b>piña</b>.','assets/img/s-jima.jpg'],
+ ['Preparación del horno','Se calientan <b>piedras volcánicas con leña</b> en un horno bajo tierra hasta alcanzar la temperatura de cocción.','assets/img/s-horno.jpg'],
+ ['Tapado','Las piñas se acomodan sobre las piedras calientes y se cubren con hojas, costales y tierra para <b>guardar el calor</b>.','assets/img/s-tapado.jpg'],
+ ['Cocción','El agave pasa <b>varios días en el horno</b>: sus almidones se vuelven azúcares y toma su sabor ahumado característico.','assets/img/s-coccion.jpg'],
+ ['Molienda','El agave cocido se muele con <b>tahona</b>, la rueda de piedra tradicional, para liberar sus jugos y fibras.','assets/img/s-molienda.jpg'],
+ ['Fermentación','Lo molido reposa en pilas, donde <b>levaduras naturales</b> convierten los azúcares en alcohol.','assets/img/s-fermentacion.jpg'],
+ ['Destilado','El mosto fermentado se destila en <b>alambiques tradicionales</b> para obtener un mezcal limpio y equilibrado.','assets/img/s-destilado.jpg'],
+ ['Maduración en vidrio','El destilado se guarda <b>14 meses enterrado en barril de vidrio</b>. Sale transparente, redondo y listo para embotellar.',null]
+];
+const tl=document.getElementById('tl');
+tl.innerHTML=STEPS.map((s,i)=>`<li class="rv${s[2]?'':' key'}"><div class="txt"><span class="n">Paso ${i+1} de ${STEPS.length}</span><h4>${s[0]}</h4><p>${s[1]}</p></div>${s[2]?`<figure><img src="${s[2]}" alt="${s[0]}" loading="lazy"></figure>`:`<figure class="buried">${BURIED}</figure>`}</li>`).join('');
+
+/* ---------- Sellos ---------- */
+const AG='<path d="M15 27V13M15 13c0-5 4-9 10-9 0 6-4 10-10 9zM15 17c0-4-3-8-9-8 0 5 4 9 9 8M15 20c2-3 6-4 10-3"/>';
+const SEALS=[
+ ['DOM','Origen','Denominación de Origen Mezcal · Michoacán · ','Denominación de origen','Mezcal de Michoacán, territorio con denominación de origen.'],
+ ['NOM','070 · 142','Norma Oficial Mexicana · Producción y envasado · ','NOM-070 y NOM-142','Producción y envasado del mezcal bajo estas normas.'],
+ ['IMPI','Marca','Registro de marca · Instituto Mexicano · ','Registro IMPI','Marca registrada ante el Instituto Mexicano de la Propiedad Industrial.'],
+ [null,'Michoacán','Orgullo Michoacán · Hecho en Michoacán · ','Orgullo Michoacán','Distintivo de producto michoacano.']
+];
+document.getElementById('seals').innerHTML=SEALS.map((s,i)=>`<div class="seal rv" style="--d:${i*.12}s"><div class="disc">
+<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="none" stroke="currentColor" style="color:var(--cu)" stroke-width="1"/><circle cx="60" cy="60" r="44" fill="none" stroke="var(--line)" stroke-dasharray="2 3"/>
+<g class="ring"><path id="rp${i}" d="M60 60m-50 0a50 50 0 1 1 100 0a50 50 0 1 1-100 0" fill="none"/><text><textPath href="#rp${i}">${s[2]+s[2]}</textPath></text></g></svg>
+<div class="face">${s[0]?`<b>${s[0]}</b>`:`<svg viewBox="0 0 30 30">${AG}</svg>`}<em>${s[1]}</em></div></div>
+<p><b>${s[3]}</b>${s[4]}</p></div>`).join('');
+
+/* ---------- Escenario ---------- */
+const stage=document.getElementById('stage'),links=[...document.querySelectorAll('#index a')];
+const mbar=document.getElementById('mbar'),mlinks=[...mbar.querySelectorAll('a')],mnav=document.querySelector('.mnav');
+function setState(k){
+  if(stage.dataset.s===k)return;
+  stage.dataset.s=k;mbar.dataset.s=k;
+  const m=x=>x.dataset.k===k||(k==='final'&&x.dataset.k==='origen');
+  links.forEach(a=>a.classList.toggle('on',m(a)));
+  mlinks.forEach(a=>{const on=m(a);a.classList.toggle('on',on);
+    if(on&&mbar.classList.contains('show')){const ul=a.parentNode.parentNode;ul.scrollTo({left:a.parentNode.offsetLeft-ul.clientWidth/2+a.parentNode.offsetWidth/2,behavior:reduce?'auto':'smooth'})}});
+}
+const panels=[...document.querySelectorAll('.content [data-k]')],closing=document.getElementById('final');
+function frame(){
+  const mid=innerHeight*.5;let cur=panels[0].dataset.k;
+  for(const p of panels){if(p.getBoundingClientRect().top<=mid)cur=p.dataset.k}
+  setState(cur);
+  mbar.classList.toggle('show',mnav.getBoundingClientRect().bottom<0);
+  const r=tl.getBoundingClientRect(),pr=Math.max(0,Math.min(1,(innerHeight*.6-r.top)/r.height));tl.style.setProperty('--prog',pr.toFixed(3));
+  const dig=reduce?(pr>.82?1:0):pr;stage.style.setProperty('--dig',dig.toFixed(3));stage.classList.toggle('buried',pr>.82);
+  closing.classList.toggle('seen',closing.getBoundingClientRect().top<innerHeight*.8);
+}
+let tk=false;
+addEventListener('scroll',()=>{if(!tk){tk=true;requestAnimationFrame(()=>{tk=false;frame()})}},{passive:true});
+addEventListener('resize',frame);
+links[0].classList.add('on');frame();
+
+/* ---------- Nota de cata ---------- */
+const NOTES={
+ vista:{t:['Brillante','Cuerpo sedoso','Limpio'],p:'Transparente y <b>brillante</b>. Los 14 meses en vidrio no le dan color: llega a la copa limpio, y al girarlo muestra un <b>cuerpo sedoso</b>.'},
+ olfato:{t:['Suave','Vainilla natural'],p:'Un aroma <b>suave</b>, sin aristas, con <b>notas de vainilla natural</b> que aparecen al dejarlo unos momentos en la copa.'},
+ sabor:{t:['Redondo','Cálido','Persistente'],p:'En boca es <b>redondo y cálido</b>, con un final <b>persistente</b> que deja el carácter del agave cupreata por largo rato.'}
+};
+const note=document.getElementById('note'),pks=[...document.querySelectorAll('.pk')];let curTab='vista';
+function showTab(k){
+  curTab=k;pks.forEach(b=>b.setAttribute('aria-selected',b.dataset.k===k));
+  const n=NOTES[k];
+  note.innerHTML=`<p>${n.p}</p><div class="tags">${n.t.map((t,i)=>`<span style="--k:${i}">${t}</span>`).join('')}</div>`;
+}
+pks.forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.k)));
+showTab('vista');
+
+/* ---------- Quiz ---------- */
+const Q=[
+ {q:'¿Cuánto tiempo pasa bajo tierra antes de embotellarse?',o:['6 meses','10 meses','14 meses','3 años'],a:2,
+  e:'Son <b>14 meses</b> enterrado en barril de vidrio. Diez meses es el tiempo del Reposado de la casa, pero ese descansa en barrica de roble.'},
+ {q:'¿De qué agave nace este mezcal?',o:['Espadín','Cupreata','Tequilana Weber','Inaequidens'],a:1,
+  e:'Es <b>100% agave cupreata</b>, el agave principal de Hermanos Alvarez y el que lleva la denominación de origen Michoacán.'},
+ {q:'Después de 14 meses de reposo, ¿por qué sigue transparente?',o:['Se filtra con carbón','El vidrio no le cede color ni sabor','Se diluye con agua','Se destila de nuevo'],a:1,
+  e:'El vidrio es <b>inerte</b>. A diferencia de la madera, no tiñe ni aporta sabor: el tiempo solo integra y redondea el mezcal.'},
+ {q:'¿Desde cuándo se transmite el oficio en la familia Álvarez?',o:['1818','1910','1968','2020'],a:0,
+  e:'Desde <b>1818</b>. Los saberes del horno de piedra, la tahona y el alambique se han heredado de generación en generación.'}
+];
+const FIN=[['Paladar de maestro mezcalero','Acertaste todo. Ya conoces este mezcal de la piña a la copa.'],['Muy buen ojo','Tienes la base clara. Ahora disfrútalo a sorbos pequeños.'],['Vas por buen camino','Ya sabes lo esencial de cómo se hace y por qué es distinto.'],['Hora de brindar y aprender','Repasa el proceso y vuelve a intentarlo.']];
+const box=document.getElementById('quizbox');
+let qi=0,score=0,res=[];
+const segs=()=>`<div class="segs">${Q.map((_,i)=>`<i class="${res[i]===true?'ok':res[i]===false?'bad':i===qi?'cur':''}"></i>`).join('')}</div>`;
+function renderQ(){
+  const it=Q[qi];box.dataset.n=qi+1;
+  box.innerHTML=`<div class="qhead"><span class="qcount">Carta ${qi+1} de ${Q.length}</span><span class="qscore">Aciertos: <b>${score}</b></span></div>${segs()}
+  <h3 class="qtitle">${it.q}</h3><div class="opts">${it.o.map((o,i)=>`<button class="opt" type="button" data-i="${i}" style="--k:${i}"><span class="k">${'ABCD'[i]}</span><span class="t">${o}</span></button>`).join('')}</div>`;
+  box.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>answer(+b.dataset.i)));
+}
+function answer(i){
+  const it=Q[qi],ok=i===it.a;if(ok)score++;res[qi]=ok;
+  box.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;b.style.animation='none';
+    if(j===it.a){b.classList.add('right');b.querySelector('.k').textContent='✓'}
+    else if(j===i){b.classList.add('wrong');b.style.animation='';b.querySelector('.k').textContent='✕'}else b.classList.add('dim')});
+  box.querySelector('.segs').outerHTML=segs();box.querySelector('.qscore b').textContent=score;
+  const fb=document.createElement('div');fb.className='fb'+(ok?'':' no');
+  fb.innerHTML=`<h4>${ok?'¡Correcto!':'No era esa'}</h4><p>${ok?'':'La respuesta correcta es <b>'+it.o[it.a]+'</b>. '}${it.e}</p>`;
+  const nx=document.createElement('button');nx.className='btn';nx.type='button';nx.textContent=qi<Q.length-1?'Siguiente carta':'Ver resultado';
+  nx.addEventListener('click',()=>{qi++;qi<Q.length?renderQ():renderEnd();box.scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'})});
+  box.append(fb,nx);nx.focus({preventScroll:true});
+}
+function renderEnd(){
+  const n=Q.length,t=score===n?FIN[0]:score===n-1?FIN[1]:score>=1?FIN[2]:FIN[3];box.dataset.n='★';
+  box.innerHTML=`${segs()}<div class="final"><div class="big">${score}<small>/${n}</small></div><h3>${t[0]}</h3><p class="lede">${t[1]}</p>
+  <div class="row"><button class="btn" type="button" id="again">Volver a jugar</button><a class="btn ghost" href="#origen">Ver origen</a></div></div>`;
+  document.getElementById('again').addEventListener('click',()=>{qi=0;score=0;res=[];renderQ()});
+}
+renderQ();
+
+/* ---------- Aparición: entra y sale cada vez ---------- */
+const rvs=[...document.querySelectorAll('.rv')];
+if('IntersectionObserver' in window&&!reduce){
+  const seen=new IntersectionObserver(en=>en.forEach(e=>{
+    const el=e.target;
+    if(e.isIntersecting){el.classList.add('in');if(el.id==='note')showTab(curTab)}
+    else el.classList.remove('in');
+  }),{threshold:.12});
+  rvs.forEach(el=>seen.observe(el));
+}else rvs.forEach(el=>el.classList.add('in'));
+}
+</script>
+</body>
+</html>
